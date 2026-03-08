@@ -4,9 +4,11 @@ Gemini Telegram Bot
 - chat_id 기반 보안 필터를 포함합니다.
 """
 
+import os
 import json
 import logging
 import google.generativeai as genai
+from dotenv import load_dotenv
 from telegram import Update
 from telegram.ext import (
     ApplicationBuilder,
@@ -23,13 +25,12 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-# ─── 설정 로드 ───────────────────────────────────────────────
-with open("config.json", "r", encoding="utf-8") as f:
-    cfg = json.load(f)
+# ─── 설정 로드 (dotenv) ───────────────────────────────────────
+load_dotenv()
 
-GEMINI_API_KEY = cfg["gemini_api_key"]
-TELEGRAM_TOKEN = cfg["telegram_token"]
-ALLOWED_CHAT_ID = cfg.get("chat_id")  # 보안: 허용된 chat_id
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
+ALLOWED_CHAT_ID = os.getenv("CHAT_ID")  # 보안: 허용된 chat_id
 
 # ─── Gemini 초기화 ──────────────────────────────────────────
 genai.configure(api_key=GEMINI_API_KEY)

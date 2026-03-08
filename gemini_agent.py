@@ -5,11 +5,13 @@ Gemini Telegram AI Agent
 - 결과를 텔레그램으로 반환
 """
 
+import os
 import json
 import logging
 from pathlib import Path
 
 import google.generativeai as genai
+from dotenv import load_dotenv
 from google.generativeai.types import content_types
 from telegram import Update
 from telegram.ext import (
@@ -29,17 +31,15 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-# ─── 설정 로드 ───────────────────────────────────────────────
+# ─── 설정 로드 (dotenv) ───────────────────────────────────────
 BASE_DIR = Path(__file__).parent
-
-with open(BASE_DIR / "config.json", "r", encoding="utf-8") as f:
-    cfg = json.load(f)
+load_dotenv(BASE_DIR / ".env")
 
 with open(BASE_DIR / "system_prompt.txt", "r", encoding="utf-8") as f:
     SYSTEM_PROMPT = f.read()
 
 # ─── bkit 컨텍스트 로드 ──────────────────────────────────────
-BKIT_PATH = cfg.get("bkit_path")
+BKIT_PATH = os.getenv("BKIT_PATH")
 if BKIT_PATH:
     bkit_gemini_md = Path(BKIT_PATH) / "GEMINI.md"
     if bkit_gemini_md.exists():
@@ -50,9 +50,10 @@ if BKIT_PATH:
         SYSTEM_PROMPT += bkit_context
         SYSTEM_PROMPT += "\n" + "="*40 + "\n"
 
-GEMINI_API_KEY = cfg["gemini_api_key"]
-TELEGRAM_TOKEN = cfg["telegram_token"]
-ALLOWED_CHAT_ID = cfg.get("chat_id")
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
+ALLOWED_CHAT_ID = os.getenv("CHAT_ID")
+
 
 # ─── Gemini 초기화 ──────────────────────────────────────────
 genai.configure(api_key=GEMINI_API_KEY)

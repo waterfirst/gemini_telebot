@@ -180,9 +180,9 @@ def execute_tool(tool_name: str, args: dict) -> str:
     elif tool_name == "activate_skill":
         skill_name = args.get("skill_name", "")
         try:
-            with open("config.json", "r", encoding="utf-8") as f:
-                cfg = json.load(f)
-            bkit_path = Path(cfg.get("bkit_path", ""))
+            from dotenv import load_dotenv
+            load_dotenv()
+            bkit_path = Path(os.getenv("BKIT_PATH", ""))
             skill_path = bkit_path / "skills" / skill_name / "SKILL.md"
 
             if not skill_path.exists():
@@ -199,9 +199,9 @@ def execute_tool(tool_name: str, args: dict) -> str:
 
     elif tool_name == "gemini_cli_agent":
         prompt = args.get("prompt", "")
-        with open("config.json", "r", encoding="utf-8") as f:
-            cfg = json.load(f)
-        api_key = cfg.get("gemini_api_key")
+        from dotenv import load_dotenv
+        load_dotenv()
+        api_key = os.getenv("GEMINI_API_KEY")
         
         # 환경 변수 설정 후 gemini CLI 실행
         env = os.environ.copy()
